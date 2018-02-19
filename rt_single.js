@@ -1,14 +1,12 @@
-
 // Transformation Definitions
-
 const transform1 = { a: 'prop2', b: 'prop1' };
 const transform_comma = ",";
 const transform_hyphen = "-";
 const transform_name = {
-  firstNameA: 'Alice',
-  firstNameB: 'Bob',
-  firstNameC: 'Jerry',
-  firstNameD: 'default value',
+  firstNameA: (r) => r.get('name1'),
+  firstNameB: (r) => r.get('name2'),
+  firstNameC: (r) => r.get('name3'),
+  firstNameD: (r) => r.get('name4'),
 };
 const transform_address = { person: {
           name: (r) => r.get('name'),
@@ -18,25 +16,25 @@ const transform_address = { person: {
           hash: (r) => md5([r.get('addressStreet'), r.get('addressCity'), r.get('addressState')].join('-')),
           street: (r) => r.get('addressStreet'),
           city: (r) => r.get('addressCity'),
-          state: (r) => r.get('addressState'),
+          state: (r) => r.get('addressState')
 }};
 const transform_simpleAddress = {
     person: {
-      name: 'Alice',
+      name: (r) => r.get('name'),
     },
     addresses: {
-      street: '730 Florida',
-      city: 'San Francisco',
-      state: 'CA',
-    },
+      street: (r) => r.get('addressStreet'),
+      city: (r) => r.get('addressCity'),
+      state: (r) => r.get('addressState'),
+    }
 };
 const transform_conditionalMap = {
         prop: (r) => r.get('prop1') || r.get('prop2')
 };
 const transform_convertChar = {
-        vectorThing: (r) => r.get('stringThing').split(',').filter((v) => !!v.length).map((v) => v.trim().toUpperCase())
+        vectorThing: (r) => r.get('stringThing').split(',').filter((v) =>
+                            !!v.length).map((v) => v.trim().toUpperCase())
 };
-
 
 // Test variables
 const record = { prop1: 'yo', prop2: 'dude' };
@@ -74,9 +72,11 @@ const conditionalMap_record = [
 const convertChar_record = [{
     stringThing: 'a, b, c',
 }];
+
 // Additional Variables
 var letter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+// single function for transformations
 function overall_Transformation(dict, transformation_def)
 {
     // Scenario 1
@@ -86,11 +86,13 @@ function overall_Transformation(dict, transformation_def)
         // keeps track of keys used in given transformation dictionary
         for (var key in transformation_def)
         {
-            if (transformation_def.hasOwnProperty(key))
+            if (transformation_def.hasOwnProperty(key)) {
                 keys.push(key);
+            }
         }
-        for (var i = 0; i < keys.length; i++)
+        for (var i = 0; i < keys.length; i++) {
             result_dict[keys[i]] = dict[transformation_def[keys[i]]];
+        }
         return result_dict;
     }
     // Scenario A
@@ -99,9 +101,11 @@ function overall_Transformation(dict, transformation_def)
         var len = 0;
         var name = "";
         // determines length of given input dictionary
-        for(var e in dict)
-            if(dict.hasOwnProperty(e))
+        for(var e in dict) {
+            if(dict.hasOwnProperty(e)) {
                 len++;
+            }
+        }
         for (i = 0; i < len; i++) {
             // retrieves different JSON variables each iteration (name1, name2, name3...)
             name = "name" + String(i + 1);
@@ -114,21 +118,28 @@ function overall_Transformation(dict, transformation_def)
         var result_dict = {};
         var len = 0;
         // determines length of given input dictionary
-        for(var e in dict)
-            if(dict.hasOwnProperty(e))
+        for(var e in dict) {
+            if(dict.hasOwnProperty(e)) {
                 len++;
-        for (i = 0; i < len; i++)
+            }
+        }
+        for (i = 0; i < len; i++) {
             var name = "name" + String(i + 1);
             var result = "";
             // the last input dictionary value is ran separately to ensure no comma or hyphen is placed after it
-            if (len - 1 == i)
+            if (len - 1 == i) {
                 result += String((r) => r.get(name));
-            else
-                if (transformation_def == ",")
+            }
+            else {
+                if (transformation_def == ",") {
                     result += String((r) => r.get(name)) + ", ";
-                else
+                }
+                else {
                     result += String((r) => r.get(name)) + "-";
+                }
+            }
             result_dict["names"] = result;
+        }
         return result_dict;
     }
     // Scenario D
